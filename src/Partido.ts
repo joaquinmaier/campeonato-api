@@ -5,6 +5,7 @@ export class Partido
 {
     private pendiente: boolean;
     private resultado: Array<number> | null;
+    private penales: Array<boolean> | null;
     private equipo_local: Equipo;
     private equipo_visitante: Equipo;
     private estadio: Estadio | null;
@@ -12,6 +13,7 @@ export class Partido
     constructor( local: Equipo, visitante: Equipo ) {
         this.pendiente = true;
         this.resultado = new Array<number>();
+        this.penales = null;
 
         this.equipo_local = local;
         this.equipo_visitante = visitante;
@@ -48,6 +50,35 @@ export class Partido
         return this.estadio;
     }
 
+    get_winner(): Equipo | undefined {
+        if ( this.resultado == null ) {
+            return undefined;
+        }
+
+        if ( this.resultado[0] > this.resultado[1] ) {
+            return this.equipo_local;
+
+        } else if ( this.resultado[1] > this.resultado[0] ) {
+            return this.equipo_visitante;
+
+        }
+
+        if ( this.penales == null ) {
+            throw new Error( "El resultado es un empate y no se fue a penales" );
+        }
+
+        if ( this.penales[0] ) {
+            return this.equipo_local;
+
+        } else if ( this.penales[1] ) {
+            return this.equipo_visitante;
+
+        }
+
+        // Just in case for some reason none of the above apply
+        return undefined;
+    }
+
     // · Setters ·
     set_pendiente( pendiente: boolean ): void {
         this.pendiente = pendiente;
@@ -55,5 +86,15 @@ export class Partido
 
     set_resultado( goles_local: number, goles_visitante: number ) {
         this.resultado = [ goles_local, goles_visitante ];
+    }
+
+    set_penales( ganador_local: boolean ) {
+        if ( ganador_local ) {
+            this.penales = [ true, false ];
+
+        } else {
+            this.penales = [ false, true ];
+
+        }
     }
 }
