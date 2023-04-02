@@ -72,9 +72,9 @@ export class Bracket
         let     root_left_child     = graph_nodes.get( 1 )?.find( ( _, index: number ) => index == 0 );
         let     root_right_child    = graph_nodes.get( 1 )?.find( ( _, index:number ) => index == 1 );
 
+
         if ( root_left_child == undefined || root_right_child == undefined ) {
-            console.error( "root children were NULL" );
-            return;
+            throw new Error( "Children of root bracket were NULL" );
         }
 
         root_left_child.set_parent( this );
