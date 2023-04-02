@@ -88,4 +88,8 @@ export class Equipo
 
         this.jugadores.delete( jugador );
     }
+
+    toString(): string {
+        return `Equipo: { eliminado: ${this.eliminado ? 'true' : 'false'}, nombre: \"${this.nombre}\" }`;
+    }
 }

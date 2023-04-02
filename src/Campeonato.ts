@@ -11,6 +11,26 @@ export class Campeonato
         this.bracket = new Bracket();
     }
 
+    start(): boolean {
+        try {
+            this.bracket.init( this.equipos );
+
+        } catch ( e ) {
+            if ( e instanceof Error ) {
+                console.error( e.message );
+            }
+
+            return false;
+        }
+
+        return true;
+
+    }
+
+    print_bracket() {
+        this.bracket.print( 0 );
+    }
+
     // · Getters ·
     get_equipos(): Set<Equipo> {
         return this.equipos;
