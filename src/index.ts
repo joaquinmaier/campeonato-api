@@ -1,5 +1,6 @@
 import express from 'express';
 
+import { Estadio } from './Estadio';
 import { Equipo } from './Equipo';
 import { Campeonato } from './Campeonato';
 
@@ -9,14 +10,14 @@ const app = express();
 const init_test_campeonato = (): Campeonato => {
     let campeonato = new Campeonato();
 
-    campeonato.add_equipo( new Equipo( "E1", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E2", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E3", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E4", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E5", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E6", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E7", "bruh" ) );
-    campeonato.add_equipo( new Equipo( "E8", "bruh" ) );
+    campeonato.add_equipo( new Equipo( "E1", "bruh", new Estadio( "E1S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E2", "bruh", new Estadio( "E2S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E3", "bruh", new Estadio( "E3S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E4", "bruh", new Estadio( "E4S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E5", "bruh", new Estadio( "E5S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E6", "bruh", new Estadio( "E6S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E7", "bruh", new Estadio( "E7S", [2.034567, -12.2456] ) ) );
+    campeonato.add_equipo( new Equipo( "E8", "bruh", new Estadio( "E8S", [2.034567, -12.2456] ) ) );
 
     return campeonato;
 }

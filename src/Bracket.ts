@@ -10,10 +10,10 @@ export class Bracket
     private right_child: Bracket | null;
 
     constructor();
-    constructor( parent: Bracket );
-    constructor( parent: Bracket, standing_team: Equipo );
+    constructor( standing_team: Equipo );
+    constructor( standing_team: Equipo, parent: Bracket );
 
-    constructor( parent?: Bracket, standing_team?: Equipo ) {
+    constructor( standing_team?: Equipo, parent?: Bracket ) {
         this.parent = parent ?? null;
         this.standing_team = standing_team ?? null;
 
@@ -37,9 +37,7 @@ export class Bracket
         // Create a node for each team
         graph_nodes.set( logarithm_of_teams_size, new Array<Bracket>() );
         for ( let equipo of equipos ) {
-            let new_node = new Bracket();
-
-            new_node.set_standing_team( equipo );
+            let new_node = new Bracket( equipo );
 
             graph_nodes.get( logarithm_of_teams_size )?.push( new_node );
         }
@@ -71,7 +69,6 @@ export class Bracket
 
         let     root_left_child     = graph_nodes.get( 1 )?.find( ( _, index: number ) => index == 0 );
         let     root_right_child    = graph_nodes.get( 1 )?.find( ( _, index:number ) => index == 1 );
-
 
         if ( root_left_child == undefined || root_right_child == undefined ) {
             throw new Error( "Children of root bracket were NULL" );

@@ -11,10 +11,11 @@ export class Equipo
     private estadio: Estadio | null;
 
     constructor( nombre: string, escudo: string );
-    constructor( nombre: string, escudo: string, director_tecnico: DirectorTecnico, jugadores: Set<Jugador>, estadio: Estadio );
+    constructor( nombre: string, escudo: string, estadio: Estadio )
+    constructor( nombre: string, escudo: string, estadio: Estadio, director_tecnico: DirectorTecnico, jugadores: Set<Jugador> );
 
     // Common implementation
-    constructor( nombre: string, escudo: string, director_tecnico?: DirectorTecnico, jugadores?: Set<Jugador>, estadio?: Estadio ) {
+    constructor( nombre: string, escudo: string, estadio?: Estadio, director_tecnico?: DirectorTecnico, jugadores?: Set<Jugador> ) {
         this.eliminado = false;
         this.nombre = nombre;
         this.escudo = escudo;
