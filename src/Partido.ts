@@ -25,6 +25,10 @@ export class Partido
         this.estadio = local.get_estadio();
     }
 
+    toString(): string {
+        return `Partido: { pendiente: ${this.pendiente ? 'true' : 'false'}, resultado: ${this.resultado == null ? 'null' : this.resultado}, penales: ${this.penales}, equipo_local: ${this.equipo_local.toString()}, equipo_visitante: ${this.equipo_visitante.toString()}, estadio: ${this.estadio ? this.estadio.toString() : 'null' } }`;
+    }
+
     // · Getters ·
     is_pendiente() {
         return this.pendiente;

@@ -8,6 +8,10 @@ export class Estadio
         this.coordenadas = coordenadas;
     }
 
+    toString(): string {
+        return `Estadio: { nombre: ${this.nombre}, coordenadas: ${this.coordenadas.toString()} }`
+    }
+
     // · Getters ·
     get_nombre(): string {
         return this.nombre;

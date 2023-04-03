@@ -1,4 +1,5 @@
 import { Equipo } from './Equipo';
+import { Partido } from './Partido';
 
 export class Bracket
 {
@@ -97,6 +98,39 @@ export class Bracket
 
     is_leaf(): boolean {
         return this.left_child == null && this.right_child == null;
+    }
+
+    calc_partidos( level: number, partidos_arr: Set<Partido> ) {
+        if ( this.left_child == null && this.right_child == null ) {
+            throw new Error( "Cannot calculate Partidos for a standalone node" );
+        }
+
+        let null_children = false;
+
+        if ( this.left_child?.get_standing_team() == null ) {
+            this.left_child?.calc_partidos( level + 1, partidos_arr );
+            null_children = true;
+
+        }
+
+        if ( this.right_child?.get_standing_team() == null ) {
+            this.right_child?.calc_partidos( level + 1, partidos_arr );
+            null_children = true;
+
+        }
+
+        if ( null_children ) {
+            return;
+        }
+
+        const local_is_inverted = Math.floor( Math.random() * 2 );
+        
+        if ( !!local_is_inverted ) {
+            partidos_arr.add( new Partido( this.left_child?.get_standing_team()!, this.right_child?.get_standing_team()! ) );
+            
+        } else {
+            partidos_arr.add( new Partido( this.right_child?.get_standing_team()!, this.left_child?.get_standing_team()! ) );
+        }
     }
 
     // · Getters ·
