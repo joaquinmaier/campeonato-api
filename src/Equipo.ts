@@ -5,20 +5,18 @@ export class Equipo
 {
     private eliminado: boolean;
     private nombre: string;
-    private escudo: string;                             // Must be an IMG
     private director_tecnico: DirectorTecnico | null;
     private jugadores: Set<Jugador>;
     private estadio: Estadio | null;
 
-    constructor( nombre: string, escudo: string );
-    constructor( nombre: string, escudo: string, estadio: Estadio )
-    constructor( nombre: string, escudo: string, estadio: Estadio, director_tecnico: DirectorTecnico, jugadores: Set<Jugador> );
+    constructor( nombre: string );
+    constructor( nombre: string, estadio: Estadio )
+    constructor( nombre: string, estadio: Estadio, director_tecnico: DirectorTecnico, jugadores: Set<Jugador> );
 
     // Common implementation
-    constructor( nombre: string, escudo: string, estadio?: Estadio, director_tecnico?: DirectorTecnico, jugadores?: Set<Jugador> ) {
+    constructor( nombre: string, estadio?: Estadio, director_tecnico?: DirectorTecnico, jugadores?: Set<Jugador> ) {
         this.eliminado = false;
         this.nombre = nombre;
-        this.escudo = escudo;
         this.director_tecnico = director_tecnico ?? null;
         this.jugadores = jugadores ?? new Set<Jugador>();
         this.estadio = estadio ?? null;
@@ -31,10 +29,6 @@ export class Equipo
 
     get_nombre(): string {
         return this.nombre;
-    }
-
-    get_escudo() {
-        return this.escudo;
     }
 
     get_director_tecnico(): DirectorTecnico | null {

@@ -1,17 +1,20 @@
+import { Bracket } from './Bracket';
 import { Equipo } from './Equipo';
 import { Estadio } from './Estadio';
 
 export class Partido
 {
     private pendiente: boolean;
+    private parent_bracket: Bracket;
     private resultado: Array<number> | null;
     private penales: Array<boolean> | null;
     private equipo_local: Equipo;
     private equipo_visitante: Equipo;
     private estadio: Estadio | null;
 
-    constructor( local: Equipo, visitante: Equipo ) {
+    constructor( parent_bracket: Bracket, local: Equipo, visitante: Equipo ) {
         this.pendiente = true;
+        this.parent_bracket = parent_bracket;
         this.resultado = new Array<number>();
         this.penales = null;
 
@@ -23,6 +26,21 @@ export class Partido
         }
 
         this.estadio = local.get_estadio();
+    }
+
+    advance_winner() {
+        try {
+            const winner = this.get_winner();
+
+            if ( winner == undefined ) {
+                throw new Error( "Cannot advance winner before it has been defined" );
+            }
+
+            this.parent_bracket.set_standing_team( winner );
+
+        } catch ( e ) {
+            throw e;
+        }
     }
 
     toString(): string {
@@ -52,6 +70,10 @@ export class Partido
         }
 
         return this.estadio;
+    }
+
+    get_parent_bracket() {
+        return this.parent_bracket;
     }
 
     get_winner(): Equipo | undefined {

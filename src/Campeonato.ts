@@ -1,14 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Equipo } from './Equipo';
 import { Partido } from './Partido';
 import { Bracket } from './Bracket';
 
 export class Campeonato
 {
+    private id: string;
     private equipos: Set<Equipo>;
     private bracket: Bracket;
     private remaining_partidos: Set<Partido>;
 
     constructor() {
+        this.id                 = uuidv4();
         this.equipos            = new Set<Equipo>();
         this.bracket            = new Bracket();
         this.remaining_partidos = new Set<Partido>();
@@ -69,6 +73,10 @@ export class Campeonato
 
     get_remaining_partidos(): Set<Partido> {
         return this.remaining_partidos;
+    }
+
+    get_id(): string {
+        return this.id;
     }
 
     // · Setters ·

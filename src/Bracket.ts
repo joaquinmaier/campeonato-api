@@ -126,10 +126,10 @@ export class Bracket
         const local_is_inverted = Math.floor( Math.random() * 2 );
         
         if ( !!local_is_inverted ) {
-            partidos_arr.add( new Partido( this.left_child?.get_standing_team()!, this.right_child?.get_standing_team()! ) );
+            partidos_arr.add( new Partido( this, this.left_child?.get_standing_team()!, this.right_child?.get_standing_team()! ) );
             
         } else {
-            partidos_arr.add( new Partido( this.right_child?.get_standing_team()!, this.left_child?.get_standing_team()! ) );
+            partidos_arr.add( new Partido( this, this.right_child?.get_standing_team()!, this.left_child?.get_standing_team()! ) );
         }
     }
 

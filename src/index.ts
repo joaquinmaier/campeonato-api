@@ -7,23 +7,57 @@ import { Campeonato } from './Campeonato';
 const PORT = 8080;
 const app = express();
 
+let campeonatos = new Array<Campeonato>();
+
 const init_test_campeonato = (): Campeonato => {
     let campeonato = new Campeonato();
 
-    campeonato.add_equipo( new Equipo( "E1", "bruh", new Estadio( "E1S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E2", "bruh", new Estadio( "E2S", [40.41275, 74.01338] ) ) ); 
-    campeonato.add_equipo( new Equipo( "E3", "bruh", new Estadio( "E3S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E4", "bruh", new Estadio( "E4S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E5", "bruh", new Estadio( "E5S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E6", "bruh", new Estadio( "E6S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E7", "bruh", new Estadio( "E7S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E8", "bruh", new Estadio( "E8S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E1", new Estadio( "E1S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E2", new Estadio( "E2S", [40.41275, 74.01338] ) ) ); 
+    campeonato.add_equipo( new Equipo( "E3", new Estadio( "E3S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E4", new Estadio( "E4S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E5", new Estadio( "E5S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E6", new Estadio( "E6S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E7", new Estadio( "E7S", [40.41275, 74.01338] ) ) );
+    campeonato.add_equipo( new Equipo( "E8", new Estadio( "E8S", [40.41275, 74.01338] ) ) );
 
     return campeonato;
 }
 
-app.get('/', ( req, res ) => {
+app.get('/', ( _, res ) => {
     res.status( 200 ).end( "ONLINE" );
+});
+
+app.get('/createCampeonato', async ( _, res ) => {
+    let new_campeonato = new Campeonato();
+
+    campeonatos.push( new_campeonato );
+
+    res.json({ result: "OK", campeonato_id: new_campeonato.get_id() });
+});
+
+app.get('/createCFT', async ( _, res ) => {
+    let new_campeonato = init_test_campeonato();
+
+    campeonatos.push( new_campeonato );
+
+    res.json({ result: "OK", campeonato_id: new_campeonato.get_id() });
+});
+
+app.get('/campeonatos/:id_campeonato/start', async ( req, res ) => {
+    const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+
+    if ( campeonato == undefined ) {
+        res.json({ result: "err", err: "Campeonato with specified ID does not exist" });
+    }
+
+    campeonato?.start();
+    campeonato?.print_bracket();
+
+    campeonato?.calc_next_partidos();
+    campeonato?.print_partidos();
+
+    res.json({ result: "OK" });
 });
 
 app.get('/testBracket', async ( req, res ) => {
