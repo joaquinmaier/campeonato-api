@@ -85,6 +85,6 @@ export class Equipo
     }
 
     toString(): string {
-        return `{ \"eliminado\": \"${this.eliminado ? 'true' : 'false'}\", \"nombre\": \"${this.nombre}\" }`;
+        return JSON.stringify( this );
     }
 }

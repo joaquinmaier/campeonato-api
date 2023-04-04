@@ -47,6 +47,22 @@ app.get('/createCFT', async ( _, res ) => {
     res.json({ result: "OK", campeonato_id: new_campeonato.get_id() });
 });
 
+app.get('/campeonatos', async ( req, res ) => {
+    let json_string = "[ ";
+
+    campeonatos.forEach(( campeonato, index ) => {
+        json_string += campeonato.toJSONString();
+
+        if ( index != campeonatos.length - 1 ) {
+            json_string += ", ";
+
+        }
+    });
+
+    json_string += " ]";
+    res.json({ result: "OK", campeonatos: JSON.parse(json_string) });
+});
+
 app.get('/campeonatos/:id_campeonato/start', async ( req, res ) => {
     const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
 

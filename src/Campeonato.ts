@@ -3,19 +3,25 @@ import { v4 as uuidv4 } from 'uuid';
 import { Equipo } from './Equipo';
 import { Partido } from './Partido';
 import { Bracket } from './Bracket';
+import { bracket_json_replacer } from './utils';
 
 export class Campeonato
 {
     private id: string;
+    private nombre: string;
     private equipos: Set<Equipo>;
     private bracket: Bracket;
     private remaining_partidos: Set<Partido>;
 
-    constructor() {
-        this.id                 = uuidv4();
-        this.equipos            = new Set<Equipo>();
-        this.bracket            = new Bracket();
-        this.remaining_partidos = new Set<Partido>();
+    constructor();
+    constructor( nombre: string );
+
+    constructor( nombre?: string ) {
+        this.id                     = uuidv4();
+        this.nombre                 = nombre ?? "";
+        this.equipos                = new Set<Equipo>();
+        this.bracket                = new Bracket();
+        this.remaining_partidos     = new Set<Partido>();
     }
 
     start(): boolean {
@@ -63,18 +69,47 @@ export class Campeonato
     }
 
     partidos_to_json_string(): string {
+        let index = 0;
         let json_string = "[ ";
 
         for ( let partido of this.remaining_partidos ) {
-            json_string += partido.toString() + ", ";
+            json_string += partido.toString();
+
+            if ( index == this.remaining_partidos.size - 1 ) {
+                break;
+            }
+
+            json_string += ", ";
+            index++;
         }
 
-        console.log( `\x1b[0;35mPRE-FINISHED JSON:\n${json_string}\x1b[0m` );
-
-        json_string = json_string.replace( /\d\d\d\d$/, '' );       // ! This is not working and causing issues
         json_string += " ]";
 
         return json_string;
+    }
+
+    equipos_to_json_string(): string {
+        let index = 0;
+        let json_string = "[ ";
+
+        for ( let equipo of this.equipos ) {
+            json_string += equipo.toString();
+
+            if ( index == this.equipos.size ) {
+                break;
+            }
+
+            json_string += ", ";
+            index++;
+        }
+
+        json_string += " ]";
+
+        return json_string;
+    }
+
+    toJSONString(): string {
+        return JSON.stringify( this, bracket_json_replacer );
     }
 
     // · Getters ·
