@@ -9,7 +9,7 @@ export class Estadio
     }
 
     toString(): string {
-        return `Estadio: { nombre: ${this.nombre}, coordenadas: ${this.coordenadas.toString()} }`
+        return `{ \"nombre\": \"${this.nombre}\", \"coordenadas\": [${this.coordenadas}] }`
     }
 
     // · Getters ·

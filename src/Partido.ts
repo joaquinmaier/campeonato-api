@@ -1,9 +1,12 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Bracket } from './Bracket';
 import { Equipo } from './Equipo';
 import { Estadio } from './Estadio';
 
 export class Partido
 {
+    private id: string;
     private pendiente: boolean;
     private parent_bracket: Bracket;
     private resultado: Array<number> | null;
@@ -13,19 +16,20 @@ export class Partido
     private estadio: Estadio | null;
 
     constructor( parent_bracket: Bracket, local: Equipo, visitante: Equipo ) {
-        this.pendiente = true;
-        this.parent_bracket = parent_bracket;
-        this.resultado = new Array<number>();
-        this.penales = null;
+        this.id                 = uuidv4();
+        this.pendiente          = true;
+        this.parent_bracket     = parent_bracket;
+        this.resultado          = new Array<number>();
+        this.penales            = null;
 
-        this.equipo_local = local;
-        this.equipo_visitante = visitante;
+        this.equipo_local       = local;
+        this.equipo_visitante   = visitante;
 
         if ( local.get_estadio() == null ) {
             throw new Error( "Local team's stadium is NULL" );
         }
 
-        this.estadio = local.get_estadio();
+        this.estadio            = local.get_estadio();
     }
 
     advance_winner() {
@@ -44,7 +48,11 @@ export class Partido
     }
 
     toString(): string {
-        return `Partido: { pendiente: ${this.pendiente ? 'true' : 'false'}, resultado: ${this.resultado == null ? 'null' : this.resultado}, penales: ${this.penales}, equipo_local: ${this.equipo_local.toString()}, equipo_visitante: ${this.equipo_visitante.toString()}, estadio: ${this.estadio ? this.estadio.toString() : 'null' } }`;
+        if ( this.estadio == null ) {
+            throw new Error( "Partido's stadium was null" );
+        }
+
+        return `{ \"id\": \"${this.id}\", \"pendiente\": \"${this.pendiente ? 'true' : 'false'}\", \"resultado\": \"${this.resultado == null ? 'null' : this.resultado}\", \"penales\": \"${this.penales}\", \"equipo_local\": ${this.equipo_local.toString()}, \"equipo_visitante\": ${this.equipo_visitante.toString()}, \"estadio\": ${this.estadio!.toString()} }`;
     }
 
     // · Getters ·
@@ -103,6 +111,10 @@ export class Partido
 
         // Just in case for some reason none of the above apply
         return undefined;
+    }
+
+    get_id(): string {
+        return this.id;
     }
 
     // · Setters ·

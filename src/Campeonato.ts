@@ -62,6 +62,21 @@ export class Campeonato
         this.bracket.calc_partidos( 0, this.remaining_partidos );
     }
 
+    partidos_to_json_string(): string {
+        let json_string = "[ ";
+
+        for ( let partido of this.remaining_partidos ) {
+            json_string += partido.toString() + ", ";
+        }
+
+        console.log( `\x1b[0;35mPRE-FINISHED JSON:\n${json_string}\x1b[0m` );
+
+        json_string = json_string.replace( /\d\d\d\d$/, '' );       // ! This is not working and causing issues
+        json_string += " ]";
+
+        return json_string;
+    }
+
     // · Getters ·
     get_equipos(): Set<Equipo> {
         return this.equipos;
@@ -77,6 +92,17 @@ export class Campeonato
 
     get_id(): string {
         return this.id;
+    }
+
+    find_partido( id: string ): Partido | undefined {
+        for ( let partido of this.remaining_partidos ) {
+            if ( partido.get_id() == id ) {
+                return partido;
+
+            }
+        }
+
+        return undefined;
     }
 
     // · Setters ·
