@@ -68,7 +68,7 @@ export class Partido
             throw new Error( "Partido's stadium was null" );
         }
 
-        return `{ \"id\": \"${this.id}\", \"pendiente\": \"${this.pendiente ? 'true' : 'false'}\", \"resultado\": [${this.resultado?.toString()}], \"penales\": ${this.penales == null ? '\"null\"' : this.penales?.toString()}, \"equipo_local\": ${this.equipo_local.toString()}, \"equipo_visitante\": ${this.equipo_visitante.toString()}, \"estadio\": ${this.estadio!.toString()} }`;
+        return `{ \"id\": \"${this.id}\", \"pendiente\": \"${this.pendiente ? 'true' : 'false'}\", \"resultado\": [${this.resultado?.toString()}], \"penales\": ${this.penales == null ? '\"null\"' : `[${this.penales?.toString()}]`}, \"equipo_local\": ${this.equipo_local.toString()}, \"equipo_visitante\": ${this.equipo_visitante.toString()}, \"estadio\": ${this.estadio!.toString()} }`;
     }
 
     // · Getters ·

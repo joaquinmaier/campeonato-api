@@ -5,23 +5,33 @@ import { Partido } from './Partido';
 import { Bracket } from './Bracket';
 import { bracket_json_replacer } from './utils';
 
+type AutoCalc = {
+    on: boolean;
+    counter: number;
+};
+
 export class Campeonato
 {
     private id: string;
+    private fecha: number;
     private nombre: string;
     private equipos: Set<Equipo>;
     private bracket: Bracket;
     private remaining_partidos: Set<Partido>;
+    private autocalc_counter: AutoCalc;
 
     constructor();
     constructor( nombre: string );
+    constructor( nombre: string, autocalc_on: boolean );
 
-    constructor( nombre?: string ) {
+    constructor( nombre?: string, autocalc_on?: boolean ) {
         this.id                     = uuidv4();
+        this.fecha                  = 0;
         this.nombre                 = nombre ?? "";
         this.equipos                = new Set<Equipo>();
         this.bracket                = new Bracket();
         this.remaining_partidos     = new Set<Partido>();
+        this.autocalc_counter       = { on: autocalc_on ?? true, counter: 0 };
     }
 
     start(): boolean {
@@ -65,6 +75,7 @@ export class Campeonato
             this.remaining_partidos.delete( partido_to_delete );
         }
 
+        this.autocalc_counter.counter = 0;
         this.bracket.calc_partidos( 0, this.remaining_partidos );
     }
 
@@ -112,6 +123,29 @@ export class Campeonato
         return JSON.stringify( this, bracket_json_replacer );
     }
 
+    autocalc_notify() {
+        if ( !this.autocalc_counter.on ) {
+            return;
+        }
+
+        this.autocalc_counter.counter++;
+
+        if ( this.autocalc_counter.counter >= this.remaining_partidos.size ) {
+            try {
+                this.calc_next_partidos();
+                this.fecha++;
+
+            } catch ( e ) {
+                throw e;
+            }
+        }
+    }
+
+    // · Getters ·
+    is_autocalc_on(): boolean {
+        return this.autocalc_counter.on;
+    }
+
     get_winner(): Equipo | undefined {
         const winning_team = this.bracket.get_standing_team();
 
@@ -122,7 +156,10 @@ export class Campeonato
         return winning_team;
     }
 
-    // · Getters ·
+    get_fecha(): number {
+        return this.fecha;
+    }
+
     get_equipos(): Set<Equipo> {
         return this.equipos;
     }
@@ -183,5 +220,9 @@ export class Campeonato
 
     set_nombre( nombre: string ) {
         this.nombre = nombre;
+    }
+
+    set_autocalc( status: boolean ) {
+        this.autocalc_counter.on = status;
     }
 }

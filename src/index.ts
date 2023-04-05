@@ -31,12 +31,52 @@ app.get('/', ( _, res ) => {
     res.status( 200 ).end( "ONLINE" );
 });
 
-app.get('/createCampeonato', async ( _, res ) => {
+app.post('/campeonatos/createEmpty', async ( _, res ) => {
     let new_campeonato = new Campeonato();
 
     campeonatos.push( new_campeonato );
 
     res.json({ campeonato_id: new_campeonato.get_id() });
+});
+
+app.post('/campeonatos/create', async ( req, res ) => {
+    if ( req.body.nombre != undefined && typeof req.body.nombre != "string" ) {
+        res.status( 400 ).json({ err: `Nombre must be of type \"string\", found ${typeof req.body.nombre}` });
+        return;
+    }
+
+    if ( req.body.autocalc != undefined && typeof req.body.autocalc != "boolean" ) {
+        res.status( 400 ).json({ err: `Autocalc must be of type \"boolean\", found ${typeof req.body.nombre}` });
+        return;
+    }
+
+    const attributes = [ req.body.nombre != undefined, req.body.autocalc != undefined ];
+
+    if ( attributes[0] && attributes[1] ) {
+        let new_campeonato = new Campeonato( req.body.nombre, req.body.autocalc );
+
+        campeonatos.push( new_campeonato );
+
+        res.status( 200 ).json({ campeonato: JSON.parse( new_campeonato.toJSONString() ) });
+
+    } else if ( attributes[0] && !attributes[1] ) {
+        let new_campeonato = new Campeonato( req.body.nombre );
+
+        campeonatos.push( new_campeonato );
+
+        res.status( 200 ).json({ campeonato: JSON.parse( new_campeonato.toJSONString() ) });
+
+    } else if ( !attributes[0] && attributes[1] ) {
+        let new_campeonato = new Campeonato( "", req.body.autocalc );
+
+        campeonatos.push( new_campeonato );
+
+        res.status( 200 ).json({ campeonato: JSON.parse( new_campeonato.toJSONString() ) });
+
+    } else {
+        res.status( 400 ).json({ err: "Attempted to create empty Campeonato. If intentional refer to /createEmpty" });
+
+    }
 });
 
 app.get('/createCFT', async ( _, res ) => {
@@ -69,6 +109,7 @@ app.route( '/campeonatos/:id_campeonato' )
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         res.status( 200 ).json({ campeonato: JSON.parse( campeonato!.toJSONString() ) });
@@ -78,24 +119,42 @@ app.route( '/campeonatos/:id_campeonato' )
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         if ( req.body.nombre != undefined ) {
             campeonato?.set_nombre( req.body.nombre );
         }
 
+        if ( req.body.autocalc != undefined && typeof req.body.autocalc == "boolean" ) {
+            campeonato?.set_autocalc( req.body.autocalc );
+        }
+
         res.status( 200 ).json({ campeonato: JSON.parse( campeonato!.toJSONString() ) });
     }
 );
+
+app.get('/campeonatos/:id_campeonato/winner', async ( req, res ) => {
+    const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+
+    if ( campeonato == undefined ) {
+        res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
+    }
+
+    const winner = campeonato?.get_winner();
+
+    res.status( 200 ).json({ winner: winner == undefined ? null : JSON.parse( winner.toString() ) });
+});
 
 app.get('/campeonatos/:id_campeonato/equipos', async ( req, res ) => {
     const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
 
     if ( campeonato == undefined ) {
         res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
     }
 
-    console.log( campeonato!.equipos_to_json_string() );
     res.status( 200 ).json({ equipos: JSON.parse( campeonato!.equipos_to_json_string() ) });
 });
 
@@ -105,12 +164,14 @@ app.route('/campeonatos/:id_campeonato/equipos/:id_equipo')
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         const equipo = campeonato?.find_equipo( req.params.id_equipo );
 
         if ( equipo == undefined ) {
             res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
         }
 
         res.status( 200 ).json({ equipo: JSON.parse( equipo!.toString() ) });
@@ -120,12 +181,14 @@ app.route('/campeonatos/:id_campeonato/equipos/:id_equipo')
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         const equipo = campeonato?.find_equipo( req.params.id_equipo );
 
         if ( equipo == undefined ) {
             res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
         }
 
         if ( !!req.body.nombre ) {
@@ -136,20 +199,43 @@ app.route('/campeonatos/:id_campeonato/equipos/:id_equipo')
     }
 );
 
-app.get('/campeonatos/:id_campeonato/start', async ( req, res ) => {
+app.post('/campeonatos/:id_campeonato/start', async ( req, res ) => {
     const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
 
     if ( campeonato == undefined ) {
         res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
     }
 
     campeonato?.start();
-    campeonato?.print_bracket();
 
     campeonato?.calc_next_partidos();
-    campeonato?.print_partidos();
 
     res.status( 204 ).end( "OK" );
+});
+
+app.post('/campeonatos/:id_campeonato/calculatePartidos', async ( req, res ) => {
+    const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+
+    if ( campeonato == undefined ) {
+        res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
+    }
+
+    if ( campeonato?.is_autocalc_on() ) {
+        res.status( 400 ).json({ err: "Campeonato has AUTOCALC on. Partidos will automatically be calculated when the current set is finished" });
+        return;
+    }
+
+    try {
+        campeonato?.calc_next_partidos();
+
+    } catch ( e ) {
+        if ( e instanceof Error ) {
+            res.status( 400 ).json({ err: e.message });
+            return;
+        }
+    }
 });
 
 app.get('/campeonatos/:id_campeonato/partidos', async ( req, res ) => {
@@ -157,6 +243,7 @@ app.get('/campeonatos/:id_campeonato/partidos', async ( req, res ) => {
 
     if ( campeonato == undefined ) {
         res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
     }
 
     const json = { partidos: JSON.parse( campeonato!.partidos_to_json_string() ) };
@@ -169,12 +256,14 @@ app.route('/campeonatos/:id_campeonato/partidos/:id_partido')
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         const partido = campeonato?.find_partido( req.params.id_partido );
 
         if ( partido == undefined ) {
             res.status( 404 ).json({ err: "Partido with specified ID does not exist" });
+            return;
         }
 
         res.json({ partido: JSON.parse( partido!.toString() ) });
@@ -184,12 +273,14 @@ app.route('/campeonatos/:id_campeonato/partidos/:id_partido')
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
         }
 
         const partido = campeonato?.find_partido( req.params.id_partido );
 
         if ( partido == undefined ) {
             res.status( 404 ).json({ err: "Partido with specified ID does not exist" });
+            return;
         }
 
         const goles_local               = req.body.goles_local;
@@ -198,11 +289,13 @@ app.route('/campeonatos/:id_campeonato/partidos/:id_partido')
 
         if ( goles_local == undefined || goles_visitante == undefined ) {
             res.status( 400 ).json({ err: "Number of goals were undefined for at least one of the teams" });
+            return;
         }
 
         if ( goles_local == goles_visitante ) {
             if ( req.body.ganador_penales == undefined ) {
                 res.status( 400 ).json({ err: "The result is a tie and the winner by penalties was not specified" });
+                return;
             }
 
             switch ( req.body.ganador_penales ) {
@@ -216,6 +309,7 @@ app.route('/campeonatos/:id_campeonato/partidos/:id_partido')
 
                 default:
                     res.status( 400 ).json({ err: "The winner by penalties was an invalid value. Valid values are \'local\' or \'visitante\'" });
+                    return;
             }
         }
 
@@ -225,7 +319,7 @@ app.route('/campeonatos/:id_campeonato/partidos/:id_partido')
             partido?.set_penales( ganador_local_por_penales );
         }
 
-        res.status( 200 ).json({ winner: JSON.parse( partido!.get_winner()!.toString() ), modifiable: true });
+        res.status( 200 ).json({ winner: JSON.parse( partido!.get_winner()!.toString() ), modifiable: partido!.is_pendiente() ? true : false });
     }
 );
 
@@ -234,12 +328,14 @@ app.post('/campeonatos/:id_campeonato/partidos/:id_partido/commit', async ( req,
 
     if ( campeonato == undefined ) {
         res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+        return;
     }
 
     const partido = campeonato?.find_partido( req.params.id_partido );
 
     if ( partido == undefined ) {
         res.status( 400 ).json({ err: "Partido with specified ID does not exist" });
+        return;
     }
 
     try {
@@ -247,9 +343,19 @@ app.post('/campeonatos/:id_campeonato/partidos/:id_partido/commit', async ( req,
 
         if ( winner == undefined ) {
             res.status( 400 ).json({ err: "The winner of the match is yet to be defined" });
+            return;
         }
 
-        partido?.advance_winner();
+        try {
+            partido?.advance_winner();
+
+            campeonato.autocalc_notify();
+
+        } catch ( e ) {
+            if ( e instanceof Error ) {
+                res.status( 500 ).json({ err: e.message });
+            }
+        }
 
         res.status( 200 ).json({ winner: JSON.parse( winner!.toString() ), modifiable: false });
 
@@ -298,6 +404,7 @@ app.post('/printBracket', async ( req, res ) => {
 
     if ( campeonato == undefined ) {
         res.status( 400 ).json({ err: "Campeonato does not exist" });
+        return;
     }
 
     campeonato?.print_bracket();
