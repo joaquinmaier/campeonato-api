@@ -1,8 +1,11 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Jugador, DirectorTecnico } from './Personal';
 import { Estadio } from './Estadio';
 
 export class Equipo
 {
+    private id: string;
     private eliminado: boolean;
     private nombre: string;
     private director_tecnico: DirectorTecnico | null;
@@ -15,11 +18,12 @@ export class Equipo
 
     // Common implementation
     constructor( nombre: string, estadio?: Estadio, director_tecnico?: DirectorTecnico, jugadores?: Set<Jugador> ) {
-        this.eliminado = false;
-        this.nombre = nombre;
-        this.director_tecnico = director_tecnico ?? null;
-        this.jugadores = jugadores ?? new Set<Jugador>();
-        this.estadio = estadio ?? null;
+        this.id                 = uuidv4();
+        this.eliminado          = false;
+        this.nombre             = nombre;
+        this.director_tecnico   = director_tecnico ?? null;
+        this.jugadores          = jugadores ?? new Set<Jugador>();
+        this.estadio            = estadio ?? null;
     }
 
     // · Getters ·
@@ -41,6 +45,10 @@ export class Equipo
 
     get_estadio(): Estadio | null {
         return this.estadio;
+    }
+
+    get_id(): string {
+        return this.id;
     }
 
     // · Setters ·

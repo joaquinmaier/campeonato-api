@@ -95,7 +95,7 @@ export class Campeonato
         for ( let equipo of this.equipos ) {
             json_string += equipo.toString();
 
-            if ( index == this.equipos.size ) {
+            if ( index == this.equipos.size - 1 ) {
                 break;
             }
 
@@ -110,6 +110,16 @@ export class Campeonato
 
     toJSONString(): string {
         return JSON.stringify( this, bracket_json_replacer );
+    }
+
+    get_winner(): Equipo | undefined {
+        const winning_team = this.bracket.get_standing_team();
+
+        if ( winning_team == null ) {
+            return undefined;
+        }
+
+        return winning_team;
     }
 
     // · Getters ·
@@ -129,11 +139,25 @@ export class Campeonato
         return this.id;
     }
 
+    get_nombre(): string {
+        return this.nombre;
+    }
+
     find_partido( id: string ): Partido | undefined {
         for ( let partido of this.remaining_partidos ) {
             if ( partido.get_id() == id ) {
                 return partido;
 
+            }
+        }
+
+        return undefined;
+    }
+
+    find_equipo( id: string ): Equipo | undefined {
+        for ( let equipo of this.equipos ) {
+            if ( equipo.get_id() == id ) {
+                return equipo;
             }
         }
 
@@ -155,5 +179,9 @@ export class Campeonato
         }
 
         this.equipos.delete( equipo );
+    }
+
+    set_nombre( nombre: string ) {
+        this.nombre = nombre;
     }
 }

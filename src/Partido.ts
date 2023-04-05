@@ -33,6 +33,10 @@ export class Partido
     }
 
     advance_winner() {
+        if ( !this.pendiente ) {
+            throw new Error( "Winner has already been defined" );
+        }
+
         try {
             const winner = this.get_winner();
 
@@ -41,6 +45,18 @@ export class Partido
             }
 
             this.parent_bracket.set_standing_team( winner );
+
+            switch ( winner ) {
+                case this.equipo_local:
+                    this.equipo_visitante.set_eliminado( true );
+                    break;
+
+                case this.equipo_visitante:
+                    this.equipo_local.set_eliminado( true );
+                    break;
+            }
+
+            this.pendiente = false;
 
         } catch ( e ) {
             throw e;
