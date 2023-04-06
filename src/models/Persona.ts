@@ -1,16 +1,24 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export abstract class Persona
 {
+    private id: string;
     private nombre: string[];
     private nacionalidad: string;
     private edad: number;
 
     constructor( nombre: string[], nacionalidad: string, edad: number ) {
-        this.nombre = nombre;
-        this.nacionalidad = nacionalidad;
-        this.edad = edad;
+        this.id             = uuidv4();
+        this.nombre         = nombre;
+        this.nacionalidad   = nacionalidad;
+        this.edad           = edad;
     }
 
     // · Getters ·
+    get_id(): string {
+        return this.id;
+    }
+
     get_nombre(): string[] {
         return this.nombre;
     }
