@@ -39,4 +39,8 @@ export abstract class Persona
     set_edad( edad: number ) {
         this.edad = edad;
     }
+
+    set_nacionalidad( nacionalidad: string ) {
+        this.nacionalidad = nacionalidad;
+    }
 }

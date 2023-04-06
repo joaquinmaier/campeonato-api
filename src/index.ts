@@ -1,7 +1,10 @@
 import express from 'express';
 import body_parser from 'body-parser';
+import swagger_ui from 'swagger-ui-express';
 
+import swagger_setup from './docs/swagger';
 import campeonato_routes from './routes/campeonatos';
+import default_routes from './routes/routes';
 
 import { Estadio } from './models/Estadio';
 import { Equipo } from './models/Equipo';
@@ -28,8 +31,9 @@ export const init_test_campeonato = (): Campeonato => {
 }
 
 app.use( body_parser.json() );
-333
 app.use( '/campeonatos', campeonato_routes );
+app.use( '/docs', swagger_ui.serve, swagger_ui.setup( swagger_setup ) );
+app.use( '/', default_routes );
 
 app.listen(8080, () => {
     console.log( `Now listening on port ${PORT}` );

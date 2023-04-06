@@ -1,7 +1,13 @@
 import { Express, Request, Response, NextFunction } from 'express';
 
 import { campeonatos } from '../index';
+import { get_campeonato_by_id } from '../utils';
+
 import { Campeonato } from '../models/Campeonato';
+import { Equipo } from '../models/Equipo';
+import { Estadio } from '../models/Estadio';
+import { Jugador, DirectorTecnico } from '../models/Personal';
+import { string_to_posicion_jugador } from '../models/PosicionJugador';
 
 export default {
     showCampeonatos: async ( req: Request, res: Response, next: NextFunction ) => {
@@ -69,7 +75,7 @@ export default {
     },
 
     getDataOfCampeonato: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -80,7 +86,7 @@ export default {
     },
 
     modifyDataOfCampeonato: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -99,7 +105,7 @@ export default {
     },
 
     startCampeonato: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -114,7 +120,7 @@ export default {
     },
 
     calcNextPartidos: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -138,7 +144,7 @@ export default {
     },
 
     getWinnerOfCampeonato: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -151,7 +157,7 @@ export default {
     },
 
     getEquipos: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -162,7 +168,7 @@ export default {
     },
 
     getDataOfEquipo: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -180,7 +186,7 @@ export default {
     },
 
     modifyDataOfEquipo: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -202,7 +208,7 @@ export default {
     },
 
     getPartidos: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -214,7 +220,7 @@ export default {
     },
 
     getDataOfPartido: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -232,7 +238,7 @@ export default {
     },
 
     postResultOfPartido: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -286,7 +292,7 @@ export default {
     },
 
     commitChangesToPartido: async ( req: Request, res: Response ) => {
-        const campeonato = campeonatos.find( (value) => value.get_id() == req.params.id_campeonato );
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
             res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
@@ -326,5 +332,475 @@ export default {
                 res.status( 400 ).json({ err: e.message });
             }
         }
-    }
+    },
+
+    addEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "string" ) {
+            res.status( 400 ).json({ err: "The team's name must be specified" });
+        }
+
+        let new_equipo = new Equipo( req.body.nombre );
+
+        campeonato?.add_equipo( new_equipo );
+
+        res.status( 200 ).json({ equipo: new_equipo });
+    },
+
+    deleteEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+        }
+
+        if ( campeonato?.has_started() ) {
+            res.status( 400 ).json({ err: "Cannot delete Equipo, Campeonato has already started" });
+        }
+
+        campeonato?.get_equipos().delete( equipo! );
+
+        res.sendStatus( 204 );
+    },
+
+    getEstadioOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+        }
+
+        res.json({ estadio: equipo!.get_estadio() == null ? null : JSON.parse( equipo!.get_estadio()!.toString() ) });
+    },
+
+    createEstadioOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( equipo?.get_estadio() != null ) {
+            res.status( 400 ).json({ err: "Equipo already has an Estadio" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "string" ) {
+            res.status( 400 ).json({ err: "Invalid nombre" });
+            return;
+        }
+
+        if ( req.body.coordenadas == undefined ) {
+            res.status( 400 ).json({ err: "Invalid coordenadas" });
+            return;
+        }
+
+        equipo.set_estadio( new Estadio( req.body.nombre, req.body.coordenadas ) );
+
+        res.json({ estadio: JSON.parse( JSON.stringify( equipo!.get_estadio()! ) ) });
+    },
+
+    modifyEstadioOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( equipo.get_estadio() == null ) {
+            res.status( 400 ).json({ err: "Equipo does not have an Estadio" });
+            return;
+        }
+
+        if ( req.body.nombre != undefined && typeof req.body.nombre == "string" ) {
+            equipo?.get_estadio()?.set_nombre( req.body.nombre );
+        }
+
+        if ( req.body.coordenadas != undefined && req.body.coordenadas.isArray() && typeof req.body.coordenadas[0] == "number" ) {
+            equipo?.get_estadio()?.set_coordenadas( [ req.body.coordenadas[0], req.body.coordenadas[1] ] );
+        }
+
+        res.json({ equipo: JSON.parse( equipo!.toString() ) });
+    },
+
+    deleteEstadioOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato?.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        equipo?.set_estadio( null );
+        res.sendStatus( 204 );
+    },
+
+    getDTOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        res.json({ director_tecnico: !!equipo!.get_director_tecnico() ? JSON.parse( JSON.stringify( equipo!.get_director_tecnico()! ) ) : null });
+    },
+
+    createDTOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( equipo?.get_director_tecnico() != null ) {
+            res.status( 400 ).json({ err: "Equipo already has a DirectorTecnico" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "object" || typeof req.body.nombre[0] != "string" ) {
+            res.status( 400 ).json({ err: "Invalid nombre" });
+            return;
+        }
+
+        if ( req.body.nacionalidad == undefined || typeof req.body.nacionalidad != "string" ) {
+            res.status( 400 ).json({ err: "Invalid nacionalidad" });
+            return;
+        }
+
+        if ( req.body.edad == undefined || typeof req.body.edad != "number" ) {
+            res.status( 400 ).json({ err: "Invalid edad" });
+            return;
+        }
+
+        equipo?.set_director_tecnico( new DirectorTecnico( req.body.nombre, req.body.nacionalidad, req.body.edad ) );
+        res.json({ director_tecnico: JSON.parse( JSON.stringify( equipo!.get_director_tecnico()! ) ) });
+    },
+
+    modifyDTOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const dt = equipo?.get_director_tecnico();
+
+        if ( dt == null ) {
+            res.status( 400 ).json({ err: "Equipo doesn't have a DirectorTecnico" });
+            return;
+        }
+
+        if ( req.body.nombre != undefined ) {
+            dt.set_nombre( req.body.nombre );
+        }
+
+        if ( req.body.edad != undefined ) {
+            dt.set_edad( req.body.edad );
+        }
+
+        if ( req.body.nacionalidad != undefined ) {
+            dt.set_nacionalidad( req.body.nacionalidad );
+        }
+
+        res.json({ director_tecnico: JSON.parse( JSON.stringify( dt ) ) });
+    },
+
+    deleteDTOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const dt = equipo?.get_director_tecnico();
+
+        if ( dt == null ) {
+            res.status( 400 ).json({ err: "Equipo doesn't have a DirectorTecnico" });
+            return;
+        }
+
+        equipo.set_director_tecnico( null );
+        res.sendStatus( 204 );
+    },
+
+    getJugadoresOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        res.json({ jugadores: JSON.parse( JSON.stringify( equipo!.get_jugadores() ) ) });
+    },
+
+    deleteJugadoresOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        for ( let jugador of equipo?.get_jugadores() ) {
+            equipo?.get_jugadores().delete( jugador );
+        }
+
+        res.sendStatus( 204 );
+    },
+
+    createJugadorForEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || req.body.nacionalidad == undefined || req.body.edad == undefined || req.body.peso == undefined || req.body.altura == undefined || req.body.dorsal == undefined || req.body.posicion == undefined ) {
+            res.status( 400 ).json({ err: "Missing required parameters" });
+            return;
+        }
+
+
+        if ( typeof req.body.nombre != "object" || typeof req.body.nombre[0] != "string" || typeof req.body.nacionalidad != "string" || typeof req.body.edad != "number" || typeof req.body.peso != "number" || typeof req.body.altura != "number" || typeof req.body.dorsal != "number" || typeof req.body.posicion != "string" || string_to_posicion_jugador( req.body.posicion ) == null ) {
+            res.status( 400 ).json({ err: "Invalid parameters passed" });
+            return;
+        }
+
+        let new_jugador = new Jugador( req.body.nombre, req.body.nacionalidad, req.body.edad, req.body.peso, req.body.altura, req.body.dorsal, string_to_posicion_jugador( req.body.posicion )! );
+
+        equipo?.add_jugador( new_jugador );
+
+        res.json({ jugador: JSON.parse( JSON.stringify( new_jugador ) ) });
+    },
+
+    getDataOfJugador: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const jugador = equipo?.find_jugador( req.params.id_jugador );
+
+        if ( jugador == undefined ) {
+            res.status( 400 ).json({ err: "Jugador with specified ID does not exist" });
+            return;
+        }
+
+        res.json({ jugador: JSON.parse( JSON.stringify( jugador ) ) });
+    },
+
+    modifyJugadorOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const jugador = equipo?.find_jugador( req.params.id_jugador );
+
+        if ( jugador == undefined ) {
+            res.status( 400 ).json({ err: "Jugador with specified ID does not exist" });
+            return;
+        }
+
+        if ( req.body.nombre != undefined && typeof req.body.nombre == "object" && typeof req.body.nombre[0] == "string" ) {
+            jugador.set_nombre( req.body.nombre );
+        }
+
+        if ( req.body.nacionalidad != undefined && typeof req.body.nacionalidad == "string" ) {
+            jugador.set_nacionalidad( req.body.nacionalidad );
+        }
+
+        if ( req.body.edad != undefined && typeof req.body.edad == "number" ) {
+            jugador.set_edad( req.body.edad );
+        }
+
+        if ( req.body.peso != undefined && typeof req.body.peso == "number" ) {
+            jugador.set_peso( req.body.peso );
+        }
+
+        if ( req.body.altura != undefined && typeof req.body.altura == "number" ) {
+            jugador.set_altura( req.body.altura );
+        }
+
+        if ( req.body.dorsal != undefined && typeof req.body.dorsal == "number" ) {
+            jugador.set_dorsal( req.body.dorsal );
+        }
+
+        if ( req.body.posicion != undefined && typeof req.body.posicion == "string" && string_to_posicion_jugador( req.body.posicion ) != null ) {
+            jugador.set_dorsal( string_to_posicion_jugador( req.body.posicion )! );
+        }
+
+        res.json({ jugador: JSON.parse( JSON.stringify( jugador ) ) });
+    },
+
+    deleteJugadorOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 400 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const jugador = equipo?.find_jugador( req.params.id_jugador );
+
+        if ( jugador == undefined ) {
+            res.status( 400 ).json({ err: "Jugador with specified ID does not exist" });
+            return;
+        }
+
+        equipo?.get_jugadores().delete( jugador );
+
+        res.sendStatus( 204 );
+    },
+
 }

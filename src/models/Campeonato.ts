@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Equipo } from './Equipo';
 import { Partido } from './Partido';
 import { Bracket } from './Bracket';
-import { bracket_json_replacer } from './utils';
+import { bracket_json_replacer } from '../utils';
 
 type AutoCalc = {
     on: boolean;
@@ -19,6 +19,7 @@ export class Campeonato
     private bracket: Bracket;
     private remaining_partidos: Set<Partido>;
     private autocalc_counter: AutoCalc;
+    private started: boolean;
 
     constructor();
     constructor( nombre: string );
@@ -26,6 +27,7 @@ export class Campeonato
 
     constructor( nombre?: string, autocalc_on?: boolean ) {
         this.id                     = uuidv4();
+        this.started                = false;
         this.fecha                  = 0;
         this.nombre                 = nombre ?? "";
         this.equipos                = new Set<Equipo>();
@@ -46,6 +48,7 @@ export class Campeonato
             return false;
         }
 
+        this.started = true;
         return true;
 
     }
@@ -142,6 +145,10 @@ export class Campeonato
     }
 
     // · Getters ·
+    has_started(): boolean {
+        return this.started;
+    }
+
     is_autocalc_on(): boolean {
         return this.autocalc_counter.on;
     }

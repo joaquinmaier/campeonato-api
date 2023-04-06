@@ -26,6 +26,16 @@ export class Equipo
         this.estadio            = estadio ?? null;
     }
 
+    find_jugador( id: string ): Jugador | undefined {
+        for ( let jugador of this.jugadores ) {
+            if ( jugador.get_id() == id ) {
+                return jugador;
+            }
+        }
+
+        return undefined;
+    }
+
     // · Getters ·
     get_eliminado(): boolean {
         return this.eliminado;
@@ -60,11 +70,11 @@ export class Equipo
         this.nombre = nombre;
     }
 
-    set_director_tecnico( dt: DirectorTecnico ) {
+    set_director_tecnico( dt: DirectorTecnico | null ) {
         this.director_tecnico = dt;
     }
 
-    set_estadio( estadio: Estadio ) {
+    set_estadio( estadio: Estadio | null ) {
         this.estadio = estadio;
     }
 
