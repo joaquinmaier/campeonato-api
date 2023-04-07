@@ -1,0 +1,2179 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "campeonato-api",
+    "description": "A simple API to create and manage football _(also called soccer)_ championships.",
+    "version": "1.0.0",
+    "license": {
+      "name": "GNU GPLv3",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "campeonatos",
+      "description": "All about `Campeonato`s management."
+    },
+    {
+      "name": "equipos",
+      "description": "All about `Equipo`s management."
+    },
+    {
+      "name": "partidos",
+      "description": "All about `Partido`s management."
+    },
+    {
+      "name": "miscellaneous",
+      "description": "Stuff that didn't fit anywhere else."
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Partido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "2efc45ed-3e51-4df7-b00c-b698ad04ee71"
+          },
+          "pendiente": {
+            "type": "boolean",
+            "example": true
+          },
+          "resultado": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "example": [
+                9,
+                0
+              ]
+            }
+          },
+          "penales": {
+            "type": "array",
+            "items": {
+              "type": "boolean",
+              "example": null
+            }
+          },
+          "equipo_local": {
+            "$ref": "#/components/schemas/Equipo"
+          },
+          "equipo_visitante": {
+            "$ref": "#/components/schemas/Equipo"
+          },
+          "estadio": {
+            "$ref": "#/components/schemas/Estadio"
+          }
+        }
+      },
+      "AutoCalc": {
+        "type": "object",
+        "properties": {
+          "on": {
+            "type": "boolean",
+            "example": "true"
+          },
+          "counter": {
+            "type": "number",
+            "example": 0
+          }
+        }
+      },
+      "Estadio": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e9681286-a67d-4136-b8f1-77b10afe0061"
+          },
+          "nombre": {
+            "type": "string",
+            "example": "La Bombonera"
+          },
+          "coordenadas": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double",
+              "example": [
+                15.0234,
+                -33.1573
+              ]
+            }
+          }
+        }
+      },
+      "Jugador": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e9681286-a67d-4136-b8f1-77b10afe0061"
+          },
+          "nombre": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "Pedro",
+                "Hernandez"
+              ]
+            }
+          },
+          "edad": {
+            "type": "number",
+            "example": 27
+          },
+          "nacionalidad": {
+            "type": "string",
+            "example": "Argentino"
+          },
+          "peso": {
+            "type": "number",
+            "format": "double",
+            "example": 68.5
+          },
+          "altura": {
+            "type": "number",
+            "example": 185
+          },
+          "dorsal": {
+            "type": "number",
+            "example": 9
+          },
+          "posicion": {
+            "type": "number",
+            "example": 1
+          }
+        }
+      },
+      "DirectorTecnico": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e9681286-a67d-4136-b8f1-77b10afe0061"
+          },
+          "nombre": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "Juan",
+                "Diaz"
+              ]
+            }
+          },
+          "edad": {
+            "type": "number",
+            "example": 33
+          },
+          "nacionalidad": {
+            "type": "string",
+            "example": "Argentino"
+          }
+        }
+      },
+      "Equipo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e9681286-a67d-4136-b8f1-77b10afe0061"
+          },
+          "eliminado": {
+            "type": "boolean",
+            "example": false
+          },
+          "nombre": {
+            "type": "string",
+            "example": "La Regioneta"
+          },
+          "director_tecnico": {
+            "$ref": "#/components/schemas/DirectorTecnico"
+          },
+          "jugadores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Jugador"
+            }
+          },
+          "estadio": {
+            "$ref": "#/components/schemas/Estadio"
+          }
+        }
+      },
+      "Campeonato": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e9681286-a67d-4136-b8f1-77b10afe0061"
+          },
+          "equipos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Equipo"
+            }
+          },
+          "autocalc_counter": {
+            "$ref": "#/components/schemas/AutoCalc"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "miscellaneous"
+        ],
+        "summary": "ONLINE message",
+        "description": "Returns a simple **ONLINE** message, useful for checking if the server is up.",
+        "responses": {
+          "200": {
+            "description": "The literal \"ONLINE\""
+          }
+        }
+      }
+    },
+    "/campeonatos": {
+      "get": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Get existing campeonatos",
+        "description": "Returns an array of every existing `Campeonato`.",
+        "responses": {
+          "200": {
+            "description": "An array of every existing `Campeonato`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Campeonato"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}": {
+      "get": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Get information of a specific Campeonato",
+        "description": "Returns the information of a specific `Campeonato`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato` to get the data of."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data of the `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Campeonato"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Change a Campeonato's information",
+        "description": "Modify a specific `Campeonato`'s information.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato` to modify."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The state of the newly modified `Campeonato`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Campeonato"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/create": {
+      "post": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Create a Campeonato",
+        "description": "Creates a `Campeonato` from the provided information. Either one of the fields can be unspecified, but at least one **MUST** be specified.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string",
+                    "example": "Joaquín Maier's Very Real Tournament"
+                  },
+                  "autocalc": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The `Campeonato` was created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Campeonato"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "An error was caused because of the request's inputs. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "err": {
+                      "type": "string",
+                      "example": "Nombre must be of type 'string', found number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/createEmpty": {
+      "post": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Create an empty Campeonato",
+        "description": "Create an empty `Campeonato` from no information. **Requires no data on the request's body.**",
+        "responses": {
+          "200": {
+            "description": "The `Campeonato` was created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Campeonato"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/start": {
+      "post": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Start the Campeonato",
+        "description": "Takes all the existing `Equipo`s and matches them up, creating new `Partido`s.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato` to start."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The `Campeonato` was successfully started"
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/calculatePartidos": {
+      "post": {
+        "tags": [
+          "partidos"
+        ],
+        "summary": "Manually calculate the next set of Partidos",
+        "description": "Manually sets off the `calc_next_partidos()` method of the specified `Campeonato`. **This is only available if AutoCalc is off.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the target `Campeonato`."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The next set of `Partido`s was successfully calculated."
+          },
+          "400": {
+            "description": "Either the `Campeonato` has _AutoCalc_ on, **or** an error occurred when calculating. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Campeonato has AUTOCALC on. Partidos will automatically be calculated when the current set is finished."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/winner": {
+      "get": {
+        "tags": [
+          "campeonatos"
+        ],
+        "summary": "Get the winner of a Campeonato.",
+        "description": "Returns the winner of the `Campeonato`. If the winner has yet to be decided returns **null.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The winner of the `Campeonato`. **Null** if it has not been decided yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get all Equipos of a Campeonato",
+        "description": "Returns an array with all the `Equipo`s of a `Campeonato`",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All the `Equipo`s of the specified `Campeonato`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equipo"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/add": {
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Add an Equipo to the Campeonato",
+        "description": "Adds a new `Equipo` to the `Campeonato` _if it has yet to start_.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "example": {
+                  "nombre": "La Regioneta"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The `Equipo` has been successfully added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The name of the new `Equipo` was not specified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "The team's name must be specified"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no `Campeonato` with the specified ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get information of a specific Equipo",
+        "description": "Returns the data of the specified `Equipo`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data of the `Equipo`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modify the data of an Equipo",
+        "description": "Modify the data of the specified `Equipo`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "example": {
+                  "nombre": "La Regioneta"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The `Equipo` was successfully modified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Delete an Equipo",
+        "description": "Deletes an `Equipo` **if** the `Campeonato` has not started.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The `Equipo` was successfully deleted."
+          },
+          "400": {
+            "description": "The `Equipo` can not be deleted because the `Campeonato` has already started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "err": {
+                      "type": "string",
+                      "example": "Cannot delete Equipo. Campeonato has already started."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}/estadio": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get the Estadio of an Equipo",
+        "description": "Returns the `Estadio` of an `Equipo`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `Estadio` of the specified `Equipo`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Estadio"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Create an Estadio for an Equipo",
+        "description": "Creates an `Estadio` for the specified `Equipo` if it does not already exist.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string",
+                    "example": "La Bombonera"
+                  },
+                  "coordenadas": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "format": "double",
+                      "example": [
+                        40.1785,
+                        -12.65548
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`Estadio` created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Estadio"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Either the information passed was invalid, the `Campeonato` has already started, **or** the `Equipo` already has an `Estadio`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo already has an Estadio"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modify the data of an Equipo's Estadio",
+        "description": "Modifies the data of an `Equipo`'s `Estadio`, if the `Campeonato` _has not yet started_. **Fields are optional and not required.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string",
+                    "example": "La Bombonera"
+                  },
+                  "coordenadas": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "format": "double",
+                      "example": [
+                        15.0234,
+                        -33.1573
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`Estadio` modified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Either `Campeonato` has already started, **or** the `Equipo` does not have an `Estadio`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato has already started"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Delete an Estadio from an Equipo",
+        "description": "Deletes an `Estadio` from an `Equipo`, if the `Campeonato` _has yet to start_.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "`Estadio` deleted successfully"
+          },
+          "400": {
+            "description": "Either `Campeonato` has already started, **or** the `Equipo` does not have an `Estadio`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato has already started"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}/directorTecnico": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get the DirectorTecnico of an Equipo",
+        "description": "Returns the `DirectorTecnico` of an `Equipo`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `DirectorTecnico` of the specified `Equipo`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DirectorTecnico"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Create a DirectorTecnico for an Equipo",
+        "description": "Creates a `DirectorTecnico` for the specified `Equipo` if it does not already exist.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectorTecnico"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`DirectorTecnico` created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DirectorTecnico"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Either the information passed was invalid, **or** the `Equipo` already has a `DirectorTecnico`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo already has a DirectorTecnico"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modify the data of an Equipo's DirectorTecnico",
+        "description": "Modifies the data of an `Equipo`'s `DirectorTecnico`, if the `Campeonato` _has not yet started_. **Fields are optional and not required.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": [
+                        "Juan",
+                        "Diaz"
+                      ]
+                    }
+                  },
+                  "nacionalidad": {
+                    "type": "string",
+                    "example": "Argentino"
+                  },
+                  "edad": {
+                    "type": "number",
+                    "example": 33
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`DirectorTecnico` modified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DirectorTecnico"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Either `Campeonato` has already started, **or** the `Equipo` does not have a `DirectorTecnico`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato has already started"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Delete a DirectorTecnico from an Equipo",
+        "description": "Deletes a `DirectorTecnico` from an `Equipo`, if the `Campeonato` _has yet to start_.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "`DirectorTecnico` deleted successfully"
+          },
+          "400": {
+            "description": "Either `Campeonato` has already started, **or** the `Equipo` does not have a `DirectorTecnico`. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato has already started"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}/jugadores": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get Jugadores of Equipo",
+        "description": "Gets the `Jugador`es of the specified `Equipo`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of `Jugador`es of the `Equipo`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jugadores": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Jugador"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Delete Jugadores of Equipo",
+        "description": "Deletes the `Jugador`es of the specified `Equipo`, if the `Campeonato` has not started.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "`Jugador`es deleted successfully."
+          },
+          "400": {
+            "description": "The `Campeonato` has already started."
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}/jugadores/add": {
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Add a Jugador to an Equipo",
+        "description": "Adds a `Jugador` to an `Equipo`, if the `Campeonato` has not started.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "nacionalidad": {
+                    "type": "string",
+                    "example": "Argentino"
+                  },
+                  "edad": {
+                    "type": "number",
+                    "example": 24
+                  },
+                  "peso": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 68.5
+                  },
+                  "altura": {
+                    "type": "number",
+                    "example": 185
+                  },
+                  "dorsal": {
+                    "type": "number",
+                    "example": 9
+                  },
+                  "posicion": {
+                    "type": "string",
+                    "example": "delantero centro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`Jugador` created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jugador"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Either the `Campeonato` has already started, **or** one or more of the body parameters were invalid/missing. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Missing required parameters"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/equipos/{id_equipo}/jugadores/{id_jugador}": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Get information of a specific Jugador",
+        "description": "Returns the data of the specified `Jugador`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          },
+          {
+            "in": "path",
+            "name": "id_jugador",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Jugador`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data of the `Jugador`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jugador"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Jugador with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modify the data of a Jugador",
+        "description": "Modify the data of the specified `Jugador`. **All fields are optional and not required.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          },
+          {
+            "in": "path",
+            "name": "id_jugador",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Jugador`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "nacionalidad": {
+                    "type": "string",
+                    "example": "Argentino"
+                  },
+                  "edad": {
+                    "type": "number",
+                    "example": 22
+                  },
+                  "peso": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 68.5
+                  },
+                  "altura": {
+                    "type": "number",
+                    "example": 185
+                  },
+                  "dorsal": {
+                    "type": "number",
+                    "example": 9
+                  },
+                  "posicion": {
+                    "type": "string",
+                    "example": "delantero centro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The `Jugador` was successfully modified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jugador"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Delete a Jugador",
+        "description": "Deletes a `Jugador` **if** the `Campeonato` has not started.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_equipo",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Equipo`."
+          },
+          {
+            "in": "path",
+            "name": "id_jugador",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Jugador`"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The `Jugador` was successfully deleted."
+          },
+          "400": {
+            "description": "The `Jugador` can not be deleted because the `Campeonato` has already started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "err": {
+                      "type": "string",
+                      "example": "Campeonato has already started."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Equipo with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/partidos": {
+      "get": {
+        "tags": [
+          "partidos"
+        ],
+        "summary": "Get the Partidos of a Campeonato",
+        "description": "Gets the `Partido`s of a `Campeonato`. If no `Partido`s exist, and no winner has been decided, first call `/start`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current set of `Partido`s.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Partido"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The ID of the `Campeonato` was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/partidos/{id_partido}": {
+      "get": {
+        "tags": [
+          "partidos"
+        ],
+        "summary": "Get information of a specific Partido",
+        "description": "Returns the data of the specified `Partido`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_partido",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Partido`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data of the `Partido`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Partido"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "partidos"
+        ],
+        "summary": "Set the result of a Partido",
+        "description": "Sets the result of the specified `Partido`. In case of penalties, 'ganador_penales' can be either '_local_' or '_visitante_'.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_partido",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Partido`."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "goles_local": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "goles_visitante": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "ganador_penales": {
+                    "type": "string",
+                    "example": "local"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The results were uploaded successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "winner": {
+                      "$ref": "#/components/schemas/Equipo"
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There was an error with the uploaded results, most likely due to an inconsistency (tie and no winner by penalties). Check the error message and fix. **No changes were saved.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "The winner by penalties was an invalid value. Valid values are 'local' or 'visitante'"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campeonatos/{id_campeonato}/partidos/{id_partido}/commit": {
+      "post": {
+        "tags": [
+          "partidos"
+        ],
+        "summary": "Commit the result of a Partido and advance winner",
+        "description": "Permanently commits the result of a `Partido` and advances the winner. **This action is permanent: once an `Equipo` advances it cannot be changed.**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_campeonato",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Campeonato`."
+          },
+          {
+            "in": "path",
+            "name": "id_partido",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the `Partido`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The results were committed successfully, and the winner has advanced.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "winner": {
+                      "$ref": "#/components/schemas/Equipo"
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No winner was defined in the `Partido`, or another error occurred when getting the winner. **Check the error message.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "The winner of the match is yet to be defined"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the specified IDs was incorrect, and does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Campeonato with specified ID does not exist"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred when advancing the winner.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "err": "Whatever internal error happened"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

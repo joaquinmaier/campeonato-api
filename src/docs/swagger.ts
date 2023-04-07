@@ -1,11 +1,15 @@
 import swaggerJSDoc, { OAS3Definition, OAS3Options } from 'swagger-jsdoc';
 
 const swaggerDefinition: OAS3Definition = {
-    openapi: "3.0.0",
+    openapi: "3.0.3",
     info: {
-        title: "My Dogshit API's Documentation",
-        description: "Campeonato be like zzz",
+        title: "campeonato-api",
+        description: "A simple API to create and manage football _(also called soccer)_ championships.",
         version: "1.0.0",
+        license: {
+            name: "GNU GPLv3",
+            url: "https://www.gnu.org/licenses/gpl-3.0.html",
+        },
     },
     servers: [
         {
@@ -13,14 +17,22 @@ const swaggerDefinition: OAS3Definition = {
         }
     ],
     components: {
-        securitySchemes: {
-            bearerAuth: {
-                type: "http",
-                scheme: "bearer",
+        schemes: {},
+    },
+    paths: {
+        "/": {
+            get: {
+                description: "Returns a simple **ONLINE** message",
+                responses: {
+                    200: {
+                        description: "The string \"ONLINE\"",
+                        content: {
+                        },
+                    },
+                },
             },
         },
-        schemes: {},
-    }
+    },
 };
 
 const swaggerOptions: OAS3Options = {
