@@ -1,6 +1,6 @@
 import { Express, Request, Response, NextFunction } from 'express';
 
-import { campeonatos } from '../index';
+import { campeonatos, remove_campeonato } from '../index';
 import { get_campeonato_by_id } from '../utils';
 
 import { Campeonato } from '../models/Campeonato';
@@ -987,4 +987,17 @@ export default {
 
         res.json({ jugador: JSON.parse( JSON.stringify( jugador ) ) });
     },
+
+    deleteCampeonato: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        remove_campeonato( req.params.id_campeonato );
+
+        res.sendStatus( 204 );
+    }
 }

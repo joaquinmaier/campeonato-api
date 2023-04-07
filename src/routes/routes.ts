@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { campeonatos, init_test_campeonato } from '../index';
+import { campeonatos } from '../index';
 
 const   router  = express.Router();
 

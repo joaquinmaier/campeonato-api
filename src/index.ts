@@ -18,20 +18,9 @@ const swagger_config = fs.readFileSync( './swagger.yaml', 'utf8' );
 
 export let campeonatos = new Array<Campeonato>();
 
-export const init_test_campeonato = (): Campeonato => {
-    let campeonato = new Campeonato();
-
-    campeonato.add_equipo( new Equipo( "E1", new Estadio( "E1S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E2", new Estadio( "E2S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E3", new Estadio( "E3S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E4", new Estadio( "E4S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E5", new Estadio( "E5S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E6", new Estadio( "E6S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E7", new Estadio( "E7S", [40.41275, 74.01338] ) ) );
-    campeonato.add_equipo( new Equipo( "E8", new Estadio( "E8S", [40.41275, 74.01338] ) ) );
-
-    return campeonato;
-}
+export const remove_campeonato = ( id: string ) => {
+    campeonatos = campeonatos.filter( (value) => value.get_id() != id );
+};
 
 app.use( body_parser.json() );
 app.use( '/campeonatos', campeonato_routes );

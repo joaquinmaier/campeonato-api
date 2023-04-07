@@ -335,7 +335,32 @@ paths:
             application/json:
               schema:
                 type: "string"
-                example: { err: "Campeonato with specified ID does not exist"}
+                example: { err: "Campeonato with specified ID does not exist" }
+
+    delete:
+      tags:
+        - campeonatos
+      summary: "Delete a Campeonato"
+      description: "Delete the `Campeonato` with the specified ID."
+      parameters:
+        - in: "path"
+          name: "id_campeonato"
+          schema:
+            type: "string"
+          required: true
+          description: "The ID of the `Campeonato` to delete."
+
+      responses:
+        204:
+          description: "The `Campeonato` was successfully deleted."
+
+        404:
+          description: "There is no `Campeonato` with the specified ID."
+          content:
+            application/json:
+              schema:
+                type: "string"
+                example: { err: "Campeonato with specified ID does not exist" }
 
   "/campeonatos/create":
     post:

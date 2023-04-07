@@ -14,7 +14,8 @@ router.post( '/create', controllers.createCampeonato );
 router.route( '/:id_campeonato' )
     .get( controllers.getDataOfCampeonato )
     .put( controllers.modifyFullDataOfCampeonato )
-    .patch( controllers.modifyDataOfCampeonato );
+    .patch( controllers.modifyDataOfCampeonato )
+    .delete( controllers.deleteCampeonato );
 
 router.post( '/:id_campeonato/start', controllers.startCampeonato );
 
