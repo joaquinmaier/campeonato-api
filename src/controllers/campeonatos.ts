@@ -112,11 +112,19 @@ export default {
             return;
         }
 
-        campeonato?.start();
+        try {
+            campeonato?.start();
 
-        campeonato?.calc_next_partidos();
+            campeonato?.calc_next_partidos();
 
-        res.sendStatus( 204 );
+            res.sendStatus( 204 );
+
+        } catch ( e ) {
+            if ( e instanceof Error ) {
+                res.status( 400 ).json({ err: e.message });
+                return;
+            }
+        }
     },
 
     calcNextPartidos: async ( req: Request, res: Response ) => {
@@ -202,7 +210,7 @@ export default {
             return;
         }
 
-        if ( !!req.body.nombre ) {
+        if ( req.body.nombre != undefined ) {
             equipo?.set_nombre( req.body.nombre );
         }
 
@@ -742,7 +750,7 @@ export default {
         const campeonato = get_campeonato_by_id( req.params.id_campeonato );
 
         if ( campeonato == undefined ) {
-            res.status( 400 ).json({ err: "Campeonato with specified ID does not exist" });
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
             return;
         }
 
@@ -823,4 +831,160 @@ export default {
         res.sendStatus( 204 );
     },
 
+    modifyFullDataOfCampeonato: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "string" || req.body.autocalc == undefined || typeof req.body.autocalc != "boolean" ) {
+            res.status( 400 ).json({ err: "Invalid or missing parameters sent" });
+            return
+        }
+
+        campeonato.set_nombre( req.body.nombre );
+        campeonato.set_autocalc( req.body.autocalc );
+
+        res.status( 200 ).json({ campeonato: JSON.parse( campeonato!.toJSONString() ) });
+
+    },
+
+    modifyFullDataOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined ) {
+            res.status( 400 ).json({ err: "Invalid or missing parameters sent" });
+            return;
+        }
+
+        res.status( 200 ).json({ equipo: JSON.parse( equipo!.toString() ) });
+    },
+
+    modifyFullEstadioOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato.has_started() ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        if ( equipo.get_estadio() == null ) {
+            res.status( 400 ).json({ err: "Equipo does not have an Estadio" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "string" || req.body.coordenadas == undefined || typeof req.body.coordenadas == "object" || typeof req.body.coordenadas[0] == "number" ) {
+            res.status( 400 ).json({ err: "Invalid or missing parameters sent" });
+            return;
+        }
+
+        equipo.get_estadio()?.set_nombre( req.body.nombre );
+        equipo.get_estadio()?.set_coordenadas( req.body.coordenadas );
+
+        res.json({ equipo: JSON.parse( equipo!.toString() ) });
+    },
+
+    modifyFullDTOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        if ( campeonato == undefined ) {
+            res.status( 400 ).json({ err: "Campeonato has already started" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const dt = equipo?.get_director_tecnico();
+
+        if ( dt == null ) {
+            res.status( 400 ).json({ err: "Equipo doesn't have a DirectorTecnico" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || req.body.edad == undefined || req.body.nacionalidad == undefined || typeof req.body.nombre != "string" || typeof req.body.edad != "number" || typeof req.body.nacionalidad != "string" ) {
+            res.status( 400 ).json({ err: "Invalid or missing parameters sent" });
+            return;
+        }
+
+        dt.set_nombre( req.body.nombre );
+        dt.set_edad( req.body.edad );
+        dt.set_nacionalidad( req.body.nacionalidad );
+
+        res.json({ director_tecnico: JSON.parse( JSON.stringify( dt ) ) });
+
+    },
+
+    modifyFullJugadorOfEquipo: async ( req: Request, res: Response ) => {
+        const campeonato = get_campeonato_by_id( req.params.id_campeonato );
+
+        if ( campeonato == undefined ) {
+            res.status( 404 ).json({ err: "Campeonato with specified ID does not exist" });
+            return;
+        }
+
+        const equipo = campeonato?.find_equipo( req.params.id_equipo );
+
+        if ( equipo == undefined ) {
+            res.status( 404 ).json({ err: "Equipo with specified ID does not exist" });
+            return;
+        }
+
+        const jugador = equipo?.find_jugador( req.params.id_jugador );
+
+        if ( jugador == undefined ) {
+            res.status( 404 ).json({ err: "Jugador with specified ID does not exist" });
+            return;
+        }
+
+        if ( req.body.nombre == undefined || typeof req.body.nombre != "object" || typeof req.body.nombre[0] != "string" || req.body.nacionalidad == undefined || typeof req.body.nacionalidad != "string" || req.body.edad == undefined || typeof req.body.edad != "number" || req.body.peso == undefined || typeof req.body.peso != "number" || req.body.altura == undefined || typeof req.body.altura != "number" || req.body.dorsal == undefined || typeof req.body.dorsal != "number" || req.body.posicion == undefined || typeof req.body.posicion != "string" || string_to_posicion_jugador( req.body.posicion ) == null ) {
+            res.status( 400 ).json({ err: "Invalid or missing parameters sent" });
+            return;
+        }
+
+        jugador.set_nombre( req.body.nombre );
+        jugador.set_nacionalidad( req.body.nacionalidad );
+        jugador.set_edad( req.body.nacionalidad );
+        jugador.set_peso( req.body.peso );
+        jugador.set_altura( req.body.altura );
+        jugador.set_dorsal( req.body.dorsal );
+        jugador.set_posicion( string_to_posicion_jugador( req.body.posicion )! );
+
+        res.json({ jugador: JSON.parse( JSON.stringify( jugador ) ) });
+    },
 }

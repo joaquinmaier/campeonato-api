@@ -13,6 +13,7 @@ router.post( '/create', controllers.createCampeonato );
 
 router.route( '/:id_campeonato' )
     .get( controllers.getDataOfCampeonato )
+    .put( controllers.modifyFullDataOfCampeonato )
     .patch( controllers.modifyDataOfCampeonato );
 
 router.post( '/:id_campeonato/start', controllers.startCampeonato );
@@ -28,6 +29,7 @@ router.post( '/:id_campeonato/equipos/add', controllers.addEquipo );
 
 router.route( '/:id_campeonato/equipos/:id_equipo' )
     .get( controllers.getDataOfEquipo )
+    .put( controllers.modifyFullDataOfEquipo )
     .patch( controllers.modifyDataOfEquipo )
     .delete( controllers.deleteEquipo );
 
@@ -35,6 +37,7 @@ router.route( '/:id_campeonato/equipos/:id_equipo' )
 router.route( '/:id_campeonato/equipos/:id_equipo/estadio' )
     .get( controllers.getEstadioOfEquipo )
     .post( controllers.createEstadioOfEquipo )
+    .put( controllers.modifyFullEstadioOfEquipo )
     .patch( controllers.modifyEstadioOfEquipo )
     .delete( controllers.deleteEstadioOfEquipo );
 
@@ -42,6 +45,7 @@ router.route( '/:id_campeonato/equipos/:id_equipo/estadio' )
 router.route( '/:id_campeonato/equipos/:id_equipo/directorTecnico' )
     .get( controllers.getDTOfEquipo )
     .post( controllers.createDTOfEquipo )
+    .put( controllers.modifyFullDTOfEquipo )
     .patch( controllers.modifyDTOfEquipo )
     .delete( controllers.deleteDTOfEquipo );
 
@@ -54,6 +58,7 @@ router.post( '/:id_campeonato/equipos/:id_equipo/jugadores/add', controllers.cre
 
 router.route( '/:id_campeonato/equipos/:id_equipo/jugadores/:id_jugador' )
     .get( controllers.getDataOfJugador )
+    .put( controllers.modifyFullJugadorOfEquipo )
     .patch( controllers.modifyJugadorOfEquipo )
     .delete( controllers.deleteJugadorOfEquipo );
 
